@@ -1,0 +1,49 @@
+html {
+    height: 100%;
+}
+.container {
+    height: 220px;
+    width: 70%;
+    margin: auto;
+
+    box-shadow:inset 0 0 0 1px black;
+}
+.element {
+    box-shadow:inset 0 0 0 1px black;
+
+    text-align: center;
+    transition: all .3s ease-in-out;
+    background-color: lightgray;
+    margin: 10px;
+    display: inline-block;
+}
+.element + p {
+    height: 18px;
+    /*margin: auto;*/
+}
+.w-h-200{
+    height: 200px;
+    width: 200px;
+}
+.w-h-200 *{
+    position: relative;
+    top: 90px;
+    margin: auto;
+}
+.w-200-h-80{
+    height: 90px;
+    width: 200px;
+}
+#elem1 {
+    float: left;
+}
+#elem2 {
+
+}
+#elem3 {
+
+}
+.selected {
+    transform: scale(110%);
+    box-shadow:inset 0 0 0 2px red;
+}
