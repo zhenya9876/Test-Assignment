@@ -1,0 +1,50 @@
+#menubar {}
+#menu-center {
+    position: relative;
+    margin: 0 auto;
+    display: inline-block;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+#menu-right{
+    position: absolute;
+    margin: 0 auto;
+    display: inline-block;
+}
+.menu-tab {
+    width: 52px;
+    height: 52px;
+    display: inline-block;
+    margin: 20px 10px;
+}
+#menu-search {
+    background-image: url("../img/menubar-search-icon.png");
+}
+#menu-live {
+    background-image: url("../img/menubar-live-icon.png");
+}
+#menu-vod {
+    background-image: url("../img/menubar-vod-icon.png");
+}
+#menu-apps {
+    background-image: url("../img/menubar-apps-icon.png");
+}
+#menu-settings {
+    margin: 20px;
+    background-image: url("../img/menubar-settings-icon.png");
+}
+.menu-inactive {
+    background-position-y: 260px;
+}
+.menu-active {
+    background-position-y: 208px;
+}
+.menu-last-pressed {
+    background-position-y: 156px;
+}
+.menu-selected {
+    background-position-y: 104px;
+}
+.menu-pressed-selected {
+    background-position-y: 52px;
+}

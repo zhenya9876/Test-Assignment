@@ -1,25 +1,49 @@
-var elements = [];
-var elementNodes;
-var currentNode;
-window.onload = init;
-function init () {
-    elements[0] = document.getElementById('elem1');
-    elements[1] = document.getElementById('elem2');
-    elements[2] = document.getElementById('elem3');
-    elements[3] = document.getElementById('elem4');
-    elements[4] = document.getElementById('elem-cont1');
+// var navElements = [];
+// var elementNodes;
+// var currentNode;
+// window.addEventListener("load", initNodes);
 
+document.addEventListener('pageLoad', initNodes);
+function initNodes () {
+    movieGenresCount = movieGenres.length;
     elementNodes = new ElementNodes();
-    elementNodes.addNode(elements[0].id, -1, 4, -1, -1);
+    elementNodes.addNode("menu-center", -1, 1, 6, -1);
+    elementNodes.addNode("menu-settings", -1, -1, -1, 0);
+    elementNodes.addNode("menu-search", -1, 3, 6, -1);
+    elementNodes.addNode("menu-live", -1, 4, 6, 2);
+    elementNodes.addNode("menu-vod", -1, 5, 6, 3);
+    elementNodes.addNode("menu-apps", -1, 1, 6, 4);
 
-    elementNodes.addNode(elements[1].id, -1, 2, 3, 0);
-    elementNodes.addNode(elements[2].id, -1, -1, -1, 1);
-    elementNodes.addNode(elements[3].id, 1, -1, -1, 0);
-    elementNodes.addNode(elements[4].id, -1, -1, -1, 0);
+    elementNodes.nodes[0].addChild(2);
+    elementNodes.nodes[0].addChild(3);
+    elementNodes.nodes[0].addChild(4);
+    elementNodes.nodes[0].addChild(5);
 
-    elementNodes.nodes[4].addChild(elementNodes.nodes[1].id);
-    elementNodes.nodes[4].addChild(elementNodes.nodes[2].id);
-    elementNodes.nodes[4].addChild(elementNodes.nodes[3].id);
+    //  6th node - genres-line
+    var genresNodeId = elementNodes.nodes.length;
+    elementNodes.addNode("genres-line", 0, -1,
+        elementNodes.nodes.length + movieGenresCount, -1);
+    //  automatic genres node creation
+    for (var i = 0; i < movieGenresCount; i++) {
+        var newNodeLeft = (i === 0) ? - 1 : elementNodes.nodes.length - 1;
+        var newNodeBottom;
+        if (i === 0) newNodeBottom = elementNodes.nodes.length + movieGenresCount;
+        var newNodeRight = (i === (movieGenresCount - 1)) ? -1 : elementNodes.nodes.length + 1;
+        elementNodes.addNode(movieGenres[i], 0, newNodeRight, newNodeBottom, newNodeLeft);
+        elementNodes.nodes[genresNodeId].addChild(elementNodes.nodes.length - 1);
+    }
+    //  auto movie-cards nodes creation
+    var moviesNodeId = elementNodes.nodes.length;
+    elementNodes.addNode("movies", 6, -1, -1,-1);
+    for (var i = 0; i < movieCards.length; i++) {
+        newNodeLeft = (i === 0) ? - 1 : elementNodes.nodes.length - 1;
+        newNodeRight = (i === (movieGenresCount - 1)) ? -1 : elementNodes.nodes.length + 1;
+        elementNodes.addNode("movie-card-" + i, genresNodeId, newNodeRight, -1,newNodeLeft);
+        elementNodes.nodes[moviesNodeId].addChild(elementNodes.nodes.length - 1);
+    }
+    //  declaration of the first focusable element
+    // currentNode = elementNodes.nodes[2];
+    window.addEventListener("keydown", onKeyDown);
 }
 function ElementNodes(){
     this.lastId = 0;
@@ -31,11 +55,11 @@ function ElementNodes(){
     this.removeNode = function (nodeId) {
         this.nodes.splice(this.nodes.indexOf(nodeId),1);
     };
-    this.getNodeByName = function (name) {
-        return this.nodes.filter(function (name) {
-
-        });
-    }
+    // this.getNodeByName = function (name) {
+    //     return this.nodes.filter(function (name) {
+    //
+    //     });
+    // }
 }
 // Element Node Object Constructor
 function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
@@ -50,7 +74,7 @@ function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
     this.parentId = -1;
 
     this.addChild = function (childNodeId) {
-        this.childrenNodesIds.push(childNodeId)
+        this.childrenNodesIds.push(childNodeId);
         elementNodes.nodes[childNodeId].parentId = this.id;
     }
     this.removeChild = function (childNodeId){
@@ -76,19 +100,30 @@ function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
                 else tempNode = elementNodes.nodes[tempNode.childrenNodesIds[0]];
             }
             goToId = tempNode.id;
-            elements[currentNode.id].classList.remove("selected");
-            currentNode = elementNodes.nodes[goToId];
-            elements[currentNode.id].classList.add("selected");
+            onSelectionChange(goToId);
+
+            console.log(currentNode);
+            console.log(navElements[currentNode.id]);
         }
     }
 }
 
+function onSelectionChange(goToId) {
+    // var styleToRemove, styleToAdd;
+    // switch (navElements[currentNode.id].id) {
+    //     case :
+    // }
+    navElements[currentNode.id].classList.remove("selected");
+    currentNode = elementNodes.nodes[goToId];
+    navElements[currentNode.id].classList.add("selected");
+}
+
 // Key Press Handler
-document.onkeydown = function onKeyDown(ev) {
+function onKeyDown(ev) {
     if (currentNode === undefined && elementNodes.nodes.length !== 0
         && ev.keyCode >= 37 && ev.keyCode <= 40){
-        currentNode = elementNodes.nodes[0];
-        elements[currentNode.id].classList.add("selected");
+        currentNode = elementNodes.nodes[2];
+        navElements[currentNode.id].classList.add("selected");
     } else {
         switch (ev.keyCode) {
             case 38:    //top

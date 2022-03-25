@@ -1,26 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru" title="Тестовое">
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/menu.css">
 </head>
 <body>
-    <div class="container">
-        <div id="elem1" class="element w-h-200">
-            <p>Element 1
-            </p>
+    <div id="bg-container" class="fill-w fill-h">
+        <div id="interface" class="fill-w fill-h stick-top">
+            <div id="menubar" class="fill-w stick-top">
+                <div id="menu-center">
+                    <div id="menu-search" class="menu-tab menu-active"></div>
+                    <div id="menu-live" class="menu-tab menu-last-pressed"></div>
+                    <div id="menu-vod" class="menu-tab menu-selected"></div>
+                    <div id="menu-apps" class="menu-tab menu-pressed-selected"></div>
+                </div>
+                <div id="menu-right" class="stick-right">
+                    <div id="menu-settings" class="menu-tab menu-active"></div>
+                </div>
+            </div>
+            <div id="genres-line">
+            </div>
+            <div id="movies-line">
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+                <div class="movie-card"></div>
+            </div>
+            <div id="movie-info-line">
+                <h1 id="movie-title">Sample text (2022)</h1>
+                <p id="movie-info">Сша, Великобритания, 2022  Боевик, Мелодрама
+                    <span class="age-rating">18+</span>
+                    IMDb:9.4 <img class="star-icon" src="img/rating-star-icon.png">
+                    Кинопоиск:9.0 <img class="star-icon" src="img/rating-star-icon.png"></p>
+            </div>
         </div>
-        <div id="elem-cont1">
-            <div id="elem2" class="element w-200-h-80">
-                <p>Element 2</p>
+        <div id="shadows" class="fill-w fill-h">
+            <img class="stick-left fill-h" src="img/left-shadow.png">
+            <img class="stick-right fill-h" src="img/right-shadow.png">
+            <div id="loader-wrapper" class="fill-h fill-w">
+                <img id="loader" src="img/loader.gif">
             </div>
-            <div id="elem3" class="element w-200-h-80">
-                <p>Element 3</p>
-            </div>
-            <div id="elem4" class="element w-200-h-80">
-                <p>Element 4</p>
-            </div>
+            <!--        <img class="stick-top fill-w" src="img/top-shadow-big.png">-->
         </div>
+
     </div>
+    <script src="scripts.js"></script>
+    <script src="movies.js"></script>
 <script src="navigation.js"></script>
 </body>
 </html>
