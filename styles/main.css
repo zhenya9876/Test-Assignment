@@ -59,17 +59,24 @@ html, body {
     margin: 10px 0;
     height: 48px;
     color: #b3b3b3;
-    width: 1280px;
     white-space: nowrap;
 }
 .genre {
+    display: inline-block;
     bottom: 0;
     color: #b3b3b3;
     margin: 0 16px;
+    height: 48px;
     line-height: 48px;
+    transition: all .3s ease-out;
+}
+.genre-active {
+    color: #dddddc;
 }
 .genre-selected {
-    font-size: 40px;
+    transform: scale(125%);
+    transform-origin: 50% 30px;
+    margin: 0 30px;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -86,16 +93,22 @@ html, body {
     position: relative;
     display: inline-block;
     background-color: lightgray;
+    background-size: cover;
+    background-position: center;
     border-radius: 4px;
     height: 250px;
     width: 175px;
     margin: 0 5px;
     top: 50%;
     transform: translateY(-50%);
-    transition: transform .3s ease-in;
+    transition: transform .3s ease-in, margin .6s ease-out;
 }
 .movie-selected {
-    transform: scale(125%);
+    transform: scale(125%) translateY(-50%);
+    top: 50%;
+    transform-origin: top;
+    margin: 0 26px;
+    box-shadow:inset 0 0 0 2px red;
 }
 #movie-info-line {
     text-align: center;
@@ -127,7 +140,5 @@ p {
 }
 .selected {
     transform: scale(125%);
-    transform-origin: center;
-    margin: 20px;
     box-shadow:inset 0 0 0 2px red;
 }

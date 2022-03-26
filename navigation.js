@@ -2,25 +2,27 @@
 // var elementNodes;
 // var currentNode;
 // window.addEventListener("load", initNodes);
-
+var genresNodeId;
+var moviesNodeId;
 document.addEventListener('pageLoad', initNodes);
 function initNodes () {
     movieGenresCount = movieGenres.length;
     elementNodes = new ElementNodes();
     elementNodes.addNode("menu-center", -1, 1, 6, -1);
-    elementNodes.addNode("menu-settings", -1, -1, -1, 0);
+    elementNodes.addNode("menu-settings", -1, -1, -1, 5);
     elementNodes.addNode("menu-search", -1, 3, 6, -1);
     elementNodes.addNode("menu-live", -1, 4, 6, 2);
     elementNodes.addNode("menu-vod", -1, 5, 6, 3);
     elementNodes.addNode("menu-apps", -1, 1, 6, 4);
 
+    elementNodes.nodes[0].addChild(1);
     elementNodes.nodes[0].addChild(2);
     elementNodes.nodes[0].addChild(3);
     elementNodes.nodes[0].addChild(4);
     elementNodes.nodes[0].addChild(5);
 
     //  6th node - genres-line
-    var genresNodeId = elementNodes.nodes.length;
+    genresNodeId = elementNodes.nodes.length;
     elementNodes.addNode("genres-line", 0, -1,
         elementNodes.nodes.length + movieGenresCount, -1);
     //  automatic genres node creation
@@ -32,17 +34,14 @@ function initNodes () {
         elementNodes.addNode(movieGenres[i], 0, newNodeRight, newNodeBottom, newNodeLeft);
         elementNodes.nodes[genresNodeId].addChild(elementNodes.nodes.length - 1);
     }
-    //  auto movie-cards nodes creation
-    var moviesNodeId = elementNodes.nodes.length;
-    elementNodes.addNode("movies", 6, -1, -1,-1);
-    for (var i = 0; i < movieCards.length; i++) {
-        newNodeLeft = (i === 0) ? - 1 : elementNodes.nodes.length - 1;
-        newNodeRight = (i === (movieGenresCount - 1)) ? -1 : elementNodes.nodes.length + 1;
-        elementNodes.addNode("movie-card-" + i, genresNodeId, newNodeRight, -1,newNodeLeft);
-        elementNodes.nodes[moviesNodeId].addChild(elementNodes.nodes.length - 1);
-    }
+    navElements[navElements.length] = movieLine;
+    moviesNodeId = navElements.length;
+    elementNodes.addNode(movieLine.id, 6,-1,-1,-1);
+
     //  declaration of the first focusable element
     // currentNode = elementNodes.nodes[2];
+    document.addEventListener('genreChange', onGenreChange);
+    document.addEventListener('movieChange', onMovieChange);
     window.addEventListener("keydown", onKeyDown);
 }
 function ElementNodes(){
@@ -52,8 +51,10 @@ function ElementNodes(){
         this.nodes.push(new ElementNode(this.lastId, name, nodeTop, nodeRight, nodeBottom, nodeLeft));
         this.lastId++;
     };
-    this.removeNode = function (nodeId) {
-        this.nodes.splice(this.nodes.indexOf(nodeId),1);
+    this.removeNodes = function (startNodeId, removeCount) {
+        var oldLength = this.nodes.length;
+        this.nodes.splice(this.nodes.indexOf(startNodeId),removeCount);
+        this.lastId -= oldLength - this.nodes.length;
     };
     // this.getNodeByName = function (name) {
     //     return this.nodes.filter(function (name) {
@@ -102,20 +103,79 @@ function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
             goToId = tempNode.id;
             onSelectionChange(goToId);
 
-            console.log(currentNode);
-            console.log(navElements[currentNode.id]);
+            // console.log(currentNode);
+            // console.log(navElements[currentNode.id]);
         }
     }
 }
 
 function onSelectionChange(goToId) {
-    // var styleToRemove, styleToAdd;
-    // switch (navElements[currentNode.id].id) {
-    //     case :
-    // }
-    navElements[currentNode.id].classList.remove("selected");
+
+    var styleToAddNext, isGenreChanged = false, isMovieChanged = false;
+    var nextElementClass = navElements[goToId].classList[0];
+    var prevElementParentId = navElements[currentNode.parentId].id;
+
+    //  determine element's container id, to know which style to remove
+    switch (prevElementParentId) {
+        case "menu-center":
+            if (nextElementClass !== "menu-tab") {
+                for (var i = 0; i < menuTabs.length; i++) {
+                    menuTabs[i].classList.remove("menu-active");
+                }
+                if (nextElementClass === "genre") {
+                    isGenreChanged = true;
+                }
+                    navElements[currentNode.id].classList.remove("menu-selected");
+                navElements[currentNode.id].classList.add("menu-last-pressed");
+            } else {
+                navElements[currentNode.id].classList.remove("menu-selected", "menu-last-pressed");
+                styleToAddNext = "menu-selected"
+            }
+            break;
+        case "genres-line":
+            if (nextElementClass !== "genre") {
+                for(var i = 0; i < genreSpans.length; i++) {
+                    genreSpans[i].classList.remove("genre-active");
+                }
+            } else {
+                navElements[currentNode.id].classList.remove("genre-selected");
+                styleToAddNext = "genre-selected";
+            }
+            break;
+        case "movies-line":
+            navElements[currentNode.id].classList.remove("movie-selected");
+            break;
+    }
+    switch (nextElementClass) {
+        case "menu-tab":
+            for (var i = 0; i < menuTabs.length; i++) {
+                menuTabs[i].classList.add("menu-active");
+            }
+            styleToAddNext = "menu-selected";
+            break;
+        case "genre":
+            if (prevElementParentId !== "genres-line"){
+                //genresLine.classList.add("genres-line-active");
+                for(var i = 0; i < genreSpans.length; i++) {
+                    genreSpans[i].classList.add("genre-active");
+                }
+            }
+            if (prevElementParentId === "genres-line")isGenreChanged = true;
+            styleToAddNext = "genre-selected";
+            break;
+        case "movie-card":
+            // isGenreChanged = false;
+            isMovieChanged = true;
+            styleToAddNext = "movie-selected";
+            break;
+        default:
+            break;
+    }
     currentNode = elementNodes.nodes[goToId];
-    navElements[currentNode.id].classList.add("selected");
+    console.log(currentNode);
+    if (isGenreChanged) document.dispatchEvent(genreChange);
+    if (isMovieChanged) document.dispatchEvent(movieChange);
+    navElements[currentNode.id].classList.add(styleToAddNext);
 }
 
 // Key Press Handler
@@ -123,7 +183,7 @@ function onKeyDown(ev) {
     if (currentNode === undefined && elementNodes.nodes.length !== 0
         && ev.keyCode >= 37 && ev.keyCode <= 40){
         currentNode = elementNodes.nodes[2];
-        navElements[currentNode.id].classList.add("selected");
+        onSelectionChange(2);
     } else {
         switch (ev.keyCode) {
             case 38:    //top

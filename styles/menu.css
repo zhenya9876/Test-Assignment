@@ -16,6 +16,7 @@
     height: 52px;
     display: inline-block;
     margin: 20px 10px;
+    background-position-y: 260px;
 }
 #menu-search {
     background-image: url("../img/menubar-search-icon.png");
@@ -43,8 +44,8 @@
     background-position-y: 156px;
 }
 .menu-selected {
-    background-position-y: 104px;
+    background-position-y: 52px;
 }
 .menu-pressed-selected {
-    background-position-y: 52px;
+    background-position-y: 104px;
 }

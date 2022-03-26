@@ -22,7 +22,7 @@ function Movie(id, title, countries, yearStart, yearEnd, genres, age,
                 "&nbsp;Кинопоиск: " + this.kinopoiskRating + " <img class=\"star-icon\" src=\"img/rating-star-icon.png\">");
         }
 }
-const movieGenres = [
+var movieGenres = [
     "Детектив",
     "Фантастика",
     "Боевик",
@@ -31,7 +31,7 @@ const movieGenres = [
     "Мелодрама",
     "Приключения"
 ];
-const movies = [
+var movies = [
     new Movie(0,"Бэтман",["США"],
     2022, null, [movieGenres[2], movieGenres[6]],
     "16+",8.4, 7.9,
