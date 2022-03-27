@@ -34,9 +34,9 @@ function initNodes () {
         elementNodes.addNode(movieGenres[i], 0, newNodeRight, newNodeBottom, newNodeLeft);
         elementNodes.nodes[genresNodeId].addChild(elementNodes.nodes.length - 1);
     }
-    navElements[navElements.length] = movieLine;
-    moviesNodeId = navElements.length;
-    elementNodes.addNode(movieLine.id, 6,-1,-1,-1);
+    navElements[navElements.length] = moviesLine;
+    moviesNodeId = navElements.length-1;
+    elementNodes.addNode(moviesLine.id, 6,-1,-1,-1);
 
     //  declaration of the first focusable element
     // currentNode = elementNodes.nodes[2];
@@ -53,7 +53,7 @@ function ElementNodes(){
     };
     this.removeNodes = function (startNodeId, removeCount) {
         var oldLength = this.nodes.length;
-        this.nodes.splice(this.nodes.indexOf(startNodeId),removeCount);
+        this.nodes.splice(startNodeId,removeCount);
         this.lastId -= oldLength - this.nodes.length;
     };
     // this.getNodeByName = function (name) {
@@ -173,9 +173,49 @@ function onSelectionChange(goToId) {
     }
     currentNode = elementNodes.nodes[goToId];
     console.log(currentNode);
+    navElements[currentNode.id].classList.add(styleToAddNext);
     if (isGenreChanged) document.dispatchEvent(genreChange);
     if (isMovieChanged) document.dispatchEvent(movieChange);
-    navElements[currentNode.id].classList.add(styleToAddNext);
+
+    //  underline & translating logic
+    var screenMiddle = window.innerWidth * .5;
+    var genresBounds = genresLine.getBoundingClientRect();
+    var moviesBounds = moviesLine.getBoundingClientRect();
+    if (nextElementClass === "genre") {
+        var genresLeftGuide = window.innerWidth * leftGuide;
+        var genresLeftMargin = navElements[currentNode.id].offsetLeft;
+        // for(var i = 0; i < currentNode.id - genresNodeId - 1; i++) {
+        //     genresLeftMargin += genreSpans[i].offsetW + parseFloat(genreSpans[i].marginLeft);
+        // }
+        underline.classList.add("display-none");
+        genresLine.style.transform = "translateX(" + (genresLeftGuide - genresLeftMargin) + "px)";
+
+        if (prevElementParentId !== "movies-line")
+            moviesLine.style.transform = "translateX(" + (screenMiddle
+            - (185)/2) + "px)";
+        else moviesLine.style.transform += "translateX(" + 21.25 + "px)";
+        underline.style.width = navElements[currentNode.id].offsetWidth * 1.5 + "px";
+        underline.style.top = genresBounds.bottom+"px";
+        setTimeout(function (){
+            underline.style.left = -genreSpans[currentNode.id-genresNodeId-1].offsetWidth * .13
+                + genreSpans[currentNode.id-genresNodeId-1].getBoundingClientRect().left + "px";
+            underline.classList.remove("display-none");
+            }, 300);
+    }
+    else if (nextElementClass === "movie-card"){
+        if (prevElementParentId !== "movies-line") underline.classList.add("display-none");
+        moviesLine.style.transform = "translateX(" + (screenMiddle
+            - (currentNode.id-moviesNodeId-1)*(185)
+            - navElements[currentNode.id].offsetWidth*1.3/2) + "px)";
+        underline.style.top = 8 + moviesBounds.bottom+"px";
+        underline.style.width = 284 + "px";
+        setTimeout(function (){
+            // underline.style.left = -movieCards[currentNode.id-moviesNodeId-1].offsetWidth * .13
+            //     + genreSpans[currentNode.id-moviesNodeId-1].getBoundingClientRect().left + "px";
+            underline.style.left = screenMiddle - 142 + "px";
+            underline.classList.remove("display-none");
+        }, 300);
+    }
 }
 
 // Key Press Handler
@@ -184,7 +224,7 @@ function onKeyDown(ev) {
         && ev.keyCode >= 37 && ev.keyCode <= 40){
         currentNode = elementNodes.nodes[2];
         onSelectionChange(2);
-    } else {
+    } else if (keysEnabled) {
         switch (ev.keyCode) {
             case 38:    //top
                 currentNode.goToNode(currentNode.nodeTop);

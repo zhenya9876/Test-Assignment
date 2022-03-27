@@ -17,9 +17,9 @@ function Movie(id, title, countries, yearStart, yearEnd, genres, age,
         }
         this.getMovieInfo = function (){
             return (this.countries.join(', ') + ", " + this.yearStart + "&nbsp;&nbsp;&nbsp;&nbsp;" + this.genres.join(', ') +
-                "&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"age-rating\">" + this.age + "</span>&nbsp;&nbsp;&nbsp;\n" +
-                "  IMDb: "+ this.imdbRating +" <img class=\"star-icon\" src=\"img/rating-star-icon.png\">\n" +
-                "&nbsp;Кинопоиск: " + this.kinopoiskRating + " <img class=\"star-icon\" src=\"img/rating-star-icon.png\">");
+                "&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"age-rating\">" + this.age + "</span>\n" +
+                "<p>IMDb: "+ this.imdbRating +" <img class=\"star-icon\" src=\"img/rating-star-icon.png\">\n" +
+                "&nbsp;Кинопоиск: " + this.kinopoiskRating + " <img class=\"star-icon\" src=\"img/rating-star-icon.png\"></p>");
         }
 }
 var movieGenres = [

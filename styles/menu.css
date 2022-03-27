@@ -1,4 +1,4 @@
-#menubar {}
+#menubar {z-index: 3;}
 #menu-center {
     position: relative;
     margin: 0 auto;

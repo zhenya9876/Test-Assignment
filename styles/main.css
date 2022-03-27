@@ -1,8 +1,10 @@
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     font-family: "Helvetica Regular", sans-serif;
     font-size: 26px;
+    position: fixed;
 }
 @font-face {
     font-family: "Helvetica Regular";
@@ -25,15 +27,25 @@ html, body {
 }
 #bg-container {
     position: relative;
+    transition: background .2s .2s ease-in;
     background-color: black;
     background-size: cover;
+    background-position: center;
     background-image: url("../img/default-bg.png");
 }
 #shadows > *{
+    z-index: 1;
     position: absolute;
 }
-#loader-wrapper {
+#underline {
+    height: 4.6%;
+    transition: left .1s linear;
+}
+.display-none{
     display: none;
+}
+#loader-wrapper {
+    position: absolute;
     background-image: url("../img/black-bg-opacity-30.png");
 }
 #loader {
@@ -59,7 +71,11 @@ html, body {
     margin: 10px 0;
     height: 48px;
     color: #b3b3b3;
+    display: inline-block;
+    overflow: hidden;
     white-space: nowrap;
+    transform-origin: left;
+    transition: transform .3s;
 }
 .genre {
     display: inline-block;
@@ -81,13 +97,12 @@ html, body {
     text-transform: uppercase;
 }
 #movies-line {
-    margin-top: 48px;
+    margin-top: 36px;
     white-space: nowrap;
-    overflow-x: hidden;
-    /*position: absolute;*/
-    /*top: 50%;*/
-    /*transform: translateY(-50%);*/
-    height: 320px;
+    /*height: 320px;*/
+    height: 44.44%;
+    /*height: 320px;*/
+    transition: transform .2s ease-out;
 }
 .movie-card {
     position: relative;
@@ -100,18 +115,21 @@ html, body {
     width: 175px;
     margin: 0 5px;
     top: 50%;
+    transform-origin: top;
     transform: translateY(-50%);
-    transition: transform .3s ease-in, margin .6s ease-out;
+    transition: transform .3s ease-in, margin .2s ease-out, top .5s;
 }
 .movie-selected {
-    transform: scale(125%) translateY(-50%);
-    top: 50%;
+    transform: scale(130%) translateY(-50%);
+    /*top: 50%;*/
     transform-origin: top;
-    margin: 0 26px;
-    box-shadow:inset 0 0 0 2px red;
+    margin: 0 30px;
 }
 #movie-info-line {
     text-align: center;
+    position: absolute;
+    width: 100%;
+    bottom: 3%;
 }
 h1 {
     font-size: 44px;
