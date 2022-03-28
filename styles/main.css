@@ -37,9 +37,9 @@ html, body {
     z-index: 1;
     position: absolute;
 }
-#underline {
+#underline1, #underline2 {
     height: 4.6%;
-    transition: left .1s linear;
+    transition: left .1s linear, width .1s ease-in;
 }
 .display-none{
     display: none;
@@ -87,7 +87,7 @@ html, body {
     transition: all .3s ease-out;
 }
 .genre-active {
-    color: #dddddc;
+    color: #e5e5e5;
 }
 .genre-selected {
     transform: scale(125%);

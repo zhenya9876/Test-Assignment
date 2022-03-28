@@ -1,7 +1,8 @@
 window.addEventListener("load", initPage);
 var bgContainer;
 var interfaceContainer;
-var underline;
+var underline1;
+var underline2;
 var loaderWrapper;
 var leftGuide = 0.15;
 var menuTabs = [];
@@ -24,10 +25,13 @@ var navElements = [];
 var elementNodes;
 var currentNode;
 
+//  init elements and put 'em in navElements array, except for movie cards
+//  they're loaded every time genre changes
 function initPage(){
     bgContainer = document.getElementById("bg-container");
     interfaceContainer = document.getElementById("interface");
-    underline = document.getElementById("underline");
+    underline1 = document.getElementById("underline1");
+    underline2 = document.getElementById("underline2");
     loaderWrapper = document.getElementById("loader-wrapper");
     menuCenter = document.getElementById("menu-center");
     menuTabs = document.getElementsByClassName("menu-tab");
@@ -42,7 +46,6 @@ function initPage(){
     window.addEventListener("genreChange", onGenreChange);
     movieChange = new Event('movieChange');
     window.addEventListener("movieChange", onMovieChange);
-
 
     navElements[0] = menuCenter;
     //  1st element is the last menuTab, cause it's settings tab
@@ -60,43 +63,42 @@ function initPage(){
         genresLine.insertAdjacentElement("beforeend", newSpan);
         navElements[navElements.length] = newSpan;
     }
-    //  cards will be created and added to navElements on every genreChange,
-    //  but for navigation test we'll do it now
-
+    //  then invoke nodes initialization initNodes() in navigation.js
     document.dispatchEvent(pageLoad);
-    console.log(navElements);
-    // movieTitle.innerText = movies[6].getMovieTitle();
-    // movieInfo.innerHTML = movies[6].getMovieInfo();
 }
 
-
-//  when genre changes need to update current movie cards
-//  and navigation elements with nodes
-function onGenreChange() {
-    // console.log('Genre Change occurred, current genre is: ' +
-    //     movieGenres[currentNode.id - genresNodeId-1]);
-    keysEnabled = false;
-    loaderWrapper.classList.remove("display-none");
-
-    navElements.splice(moviesNodeId+1, moviesCurrentIds.length);
-    elementNodes.removeNodes(moviesNodeId+1, moviesCurrentIds.length);
-    elementNodes.nodes[moviesNodeId].lastSelectedChildId = moviesNodeId + 1;
-    var currentGenre = movieGenres[currentNode.id - genresNodeId-1];
-    //  find fitting movies
-    var i = 0;
-    moviesCurrentIds = [];
+function findGenreMovies(currentGenre) {
+    var i = 0, foundMoviesIds = [];
     for (var j=0; j < movies.length; j++) {
         var hasCurrentGenre = false;
         for (var k = 0; k < movies[j].genres.length; k++) {
             if (movies[j].genres[k] === currentGenre)
             {
                 hasCurrentGenre = true;
-                moviesCurrentIds[i] = j;
+                foundMoviesIds[i] = j;
                 i++;
                 break;
             }
         }
     }
+    return foundMoviesIds;
+}
+//  when genre changes need to update current movie cards
+//  and their navigation elements with nodes
+function onGenreChange() {
+    //  for the movies loading time we turn off the keys and show a loader overlay
+    keysEnabled = false;
+    loaderWrapper.classList.remove("display-none");
+
+    //  remove old movie cards from navElements and their nodes
+    navElements.splice(moviesNodeId+1, moviesCurrentIds.length);
+    elementNodes.removeNodes(moviesNodeId+1, moviesCurrentIds.length);
+    elementNodes.nodes[moviesNodeId].lastSelectedChildId = moviesNodeId + 1;
+
+    var currentGenre = movieGenres[currentNode.id - genresNodeId-1];
+    //  find fitting movies
+    moviesCurrentIds = findGenreMovies(currentGenre);
+    //  and create card for them
     moviesLine.innerHTML = "";
     movieCards = [];
     for (var i = 0; i < moviesCurrentIds.length; i++) {
@@ -120,14 +122,11 @@ function onGenreChange() {
         keysEnabled = true;
         loaderWrapper.classList.add("display-none");
     }, moviesCurrentIds.length * moviesCurrentIds.length * 10);
-    // console.log(elementNodes.nodes[moviesNodeId-1]);
 }
 
 function onMovieChange() {
-    // console.log('Movie Change occurred, current movie is: ' +
-    //     movies[moviesCurrentIds[currentNode.id-moviesNodeId-1]].title);
     movieTitle.innerText = movies[moviesCurrentIds[currentNode.id-moviesNodeId-1]].getMovieTitle();
     movieInfo.innerHTML = movies[moviesCurrentIds[currentNode.id-moviesNodeId-1]].getMovieInfo();
     bgContainer.style.backgroundImage = "url('"+movies[moviesCurrentIds[currentNode.id-moviesNodeId-1]].imageBg+"')";
-    interfaceContainer.style.backgroundImage = "url('/img/black-bg-opacity-50.png')";
+    interfaceContainer.style.backgroundImage = "url('./img/black-bg-opacity-50.png')";
 }
