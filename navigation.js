@@ -2,16 +2,21 @@ var genresNodeId;
 var moviesNodeId;
 
 document.addEventListener('pageLoad', initNodes);
-//
+//  Nav Nodes creation for menubar, genre-line, genres and movie-line
 function initNodes () {
     movieGenresCount = movieGenres.length;
     elementNodes = new ElementNodes();
     elementNodes.addNode("menu-center", -1, 1, 6, -1);
-    elementNodes.addNode("menu-settings", -1, -1, -1, 5);
-    elementNodes.addNode("menu-search", -1, 3, 6, -1);
-    elementNodes.addNode("menu-live", -1, 4, 6, 2);
-    elementNodes.addNode("menu-vod", -1, 5, 6, 3);
-    elementNodes.addNode("menu-apps", -1, 1, 6, 4);
+    elementNodes.addNode("menu-settings", -1, -1, -1, 5,
+        "menu-selected", "menu-inactive", "menu-active", "menu-last-pressed");
+    elementNodes.addNode("menu-search", -1, 3, 6, -1,
+        "menu-selected", "menu-inactive", "menu-active", "menu-last-pressed");
+    elementNodes.addNode("menu-live", -1, 4, 6, 2,
+        "menu-selected", "menu-inactive", "menu-active", "menu-last-pressed");
+    elementNodes.addNode("menu-vod", -1, 5, 6, 3,
+        "menu-selected", "menu-inactive", "menu-active", "menu-last-pressed");
+    elementNodes.addNode("menu-apps", -1, 1, 6, 4,
+        "menu-selected", "menu-inactive", "menu-active", "menu-last-pressed");
 
     elementNodes.nodes[0].addChild(1);
     elementNodes.nodes[0].addChild(2);
@@ -29,7 +34,8 @@ function initNodes () {
         var newNodeBottom;
         if (i === 0) newNodeBottom = elementNodes.nodes.length + movieGenresCount;
         var newNodeRight = (i === (movieGenresCount - 1)) ? -1 : elementNodes.nodes.length + 1;
-        elementNodes.addNode(movieGenres[i], 0, newNodeRight, newNodeBottom, newNodeLeft);
+        elementNodes.addNode(movieGenres[i], 0, newNodeRight, newNodeBottom, newNodeLeft,
+            "genre-selected", null, "genre-active", null);
         elementNodes.nodes[genresNodeId].addChild(elementNodes.nodes.length - 1);
     }
     navElements[navElements.length] = moviesLine;
@@ -37,16 +43,19 @@ function initNodes () {
     elementNodes.addNode(moviesLine.id, 6,-1,-1,-1);
 
     //  declaration of the first focusable element
-    //  currentNode = elementNodes.nodes[2];
+    // currentNode = elementNodes.nodes[2];
     document.addEventListener('genreChange', onGenreChange);
     document.addEventListener('movieChange', onMovieChange);
     window.addEventListener("keydown", onKeyDown);
 }
+//  Element Nodes collection Object
 function ElementNodes(){
     this.lastId = 0;
     this.nodes = [];
-    this.addNode = function (name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
-        this.nodes.push(new ElementNode(this.lastId, name, nodeTop, nodeRight, nodeBottom, nodeLeft));
+    this.addNode = function (name, nodeTop, nodeRight, nodeBottom, nodeLeft,
+                             selectedClass, inactiveClass, activeClass, wasSelectedClass) {
+        this.nodes.push(new ElementNode(this.lastId, name, nodeTop, nodeRight, nodeBottom, nodeLeft,
+            selectedClass, inactiveClass, activeClass, wasSelectedClass));
         this.lastId++;
     };
     this.removeNodes = function (startNodeId, removeCount) {
@@ -54,14 +63,10 @@ function ElementNodes(){
         this.nodes.splice(startNodeId,removeCount);
         this.lastId -= oldLength - this.nodes.length;
     };
-    // this.getNodeByName = function (name) {
-    //     return this.nodes.filter(function (name) {
-    //
-    //     });
-    // }
 }
-// Element Node Object Constructor
-function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
+//  Element Node Object Constructor
+function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft,
+                        selectedClass, inactiveClass, activeClass, wasSelectedClass) {
     this.id = id;
     this.name = name;
     this.nodeTop = nodeTop;
@@ -71,6 +76,10 @@ function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
     this.childrenNodesIds = [];
     this.lastSelectedChildId = -1;
     this.parentId = -1;
+    this.selectedClass = selectedClass;
+    this.inactiveClass = inactiveClass;
+    this.activeClass = activeClass;
+    this.wasSelectedClass = wasSelectedClass;
 
     this.addChild = function (childNodeId) {
         this.childrenNodesIds.push(childNodeId);
@@ -100,78 +109,65 @@ function ElementNode(id, name, nodeTop, nodeRight, nodeBottom, nodeLeft) {
             }
             goToId = tempNode.id;
             onSelectionChange(goToId);
-
-            // console.log(currentNode);
-            // console.log(navElements[currentNode.id]);
         }
     }
 }
 
 function onSelectionChange(goToId) {
-
     var styleToAddNext, isGenreChanged = false, isMovieChanged = false;
+    //  determine element's container id, and next element's class
+    //  to know which style to remove and add
+    var currentId = currentNode.id;
     var nextElementClass = navElements[goToId].classList[0];
     var prevElementParentId = navElements[currentNode.parentId].id;
 
-    //  determine element's container id, to know which style to remove
     switch (prevElementParentId) {
         case "menu-center":
-            if (nextElementClass !== "menu-tab") {
+            isGenreChanged = true;
+            if (nextElementClass === "genre") {
                 for (var i = 0; i < menuTabs.length; i++) {
-                    menuTabs[i].classList.remove("menu-active");
+                    menuTabs[i].classList.remove(elementNodes.nodes[currentId].activeClass);
                 }
-                if (nextElementClass === "genre") {
-                    isGenreChanged = true;
+                navElements[currentId].classList.add(elementNodes.nodes[currentId].wasSelectedClass);
+                for (var i = 0; i < genreSpans.length; i++){
+                    genreSpans[i].classList.add(elementNodes.nodes[goToId].activeClass);
                 }
-                    navElements[currentNode.id].classList.remove("menu-selected");
-                navElements[currentNode.id].classList.add("menu-last-pressed");
-            } else {
-                navElements[currentNode.id].classList.remove("menu-selected", "menu-last-pressed");
-                styleToAddNext = "menu-selected"
             }
             break;
         case "genres-line":
-            if (nextElementClass !== "genre") {
-                for(var i = 0; i < genreSpans.length; i++) {
-                    genreSpans[i].classList.remove("genre-active");
-                }
+            if (nextElementClass === "genre") {
+                isGenreChanged = true;
             } else {
-                navElements[currentNode.id].classList.remove("genre-selected");
-                styleToAddNext = "genre-selected";
+                for (var i = 0; i < genreSpans.length; i++){
+                    genreSpans[i].classList.remove(elementNodes.nodes[currentId].activeClass);
+                }
+            }
+            if (nextElementClass === "menu-tab") {
+                for (var i = 0; i < menuTabs.length; i++) {
+                    menuTabs[i].classList.remove(elementNodes.nodes[goToId].wasSelectedClass);
+                    menuTabs[i].classList.add(elementNodes.nodes[goToId].activeClass);
+                }
+            } else if (nextElementClass === "movie-card") {
+                isMovieChanged = true;
             }
             break;
         case "movies-line":
-            navElements[currentNode.id].classList.remove("movie-selected");
-            break;
-    }
-    switch (nextElementClass) {
-        case "menu-tab":
-            for (var i = 0; i < menuTabs.length; i++) {
-                menuTabs[i].classList.add("menu-active");
-            }
-            styleToAddNext = "menu-selected";
-            break;
-        case "genre":
-            if (prevElementParentId !== "genres-line"){
-                //genresLine.classList.add("genres-line-active");
-                for(var i = 0; i < genreSpans.length; i++) {
-                    genreSpans[i].classList.add("genre-active");
+            if (nextElementClass === "movie-card"){
+                isMovieChanged = true;
+            } else {
+                for (var i = 0; i < genreSpans.length; i++){
+                    genreSpans[i].classList.add(elementNodes.nodes[goToId].activeClass);
                 }
             }
-            if (prevElementParentId === "genres-line")isGenreChanged = true;
-            styleToAddNext = "genre-selected";
-            break;
-        case "movie-card":
-            // isGenreChanged = false;
-            isMovieChanged = true;
-            styleToAddNext = "movie-selected";
             break;
         default:
             break;
     }
+    navElements[currentId].classList.remove(elementNodes.nodes[currentId].selectedClass);
+    navElements[goToId].classList.add(elementNodes.nodes[goToId].selectedClass);
+
     currentNode = elementNodes.nodes[goToId];
-    console.log(currentNode);
-    navElements[currentNode.id].classList.add(styleToAddNext);
+    navElements[goToId].classList.add(styleToAddNext);
     if (isGenreChanged) document.dispatchEvent(genreChange);
     if (isMovieChanged) document.dispatchEvent(movieChange);
 
@@ -181,26 +177,23 @@ function onSelectionChange(goToId) {
     var moviesBounds = moviesLine.getBoundingClientRect();
     if (nextElementClass === "genre") {
         var genresLeftGuide = window.innerWidth * leftGuide;
-        var genresLeftMargin = navElements[currentNode.id].offsetLeft;
-        // for(var i = 0; i < currentNode.id - genresNodeId - 1; i++) {
-        //     genresLeftMargin += genreSpans[i].offsetW + parseFloat(genreSpans[i].marginLeft);
-        // }
+        var genresLeftMargin = navElements[goToId].offsetLeft;
+
         underline1.classList.add("display-none");
 
         genresLine.style.transform = "translateX(" + (genresLeftGuide - genresLeftMargin) + "px)";
 
         if (prevElementParentId !== "movies-line")
-            moviesLine.style.transform = "translateX(" + (screenMiddle
-            - (185)/2) + "px)";
+            moviesLine.style.transform = "translateX(" + (screenMiddle - (185)/2) + "px)";
         else {
             moviesLine.style.transform += "translateX(" + 21.25 + "px)";
             underline2.classList.add("display-none");
         }
-        underline1.style.width = navElements[currentNode.id].offsetWidth * 1.5 + "px";
+        underline1.style.width = navElements[goToId].offsetWidth * 1.5 + "px";
         underline1.style.top = genresBounds.bottom+"px";
         setTimeout(function (){
-            underline1.style.left = -genreSpans[currentNode.id-genresNodeId-1].offsetWidth * .13
-                + genreSpans[currentNode.id-genresNodeId-1].getBoundingClientRect().left + "px";
+            underline1.style.left = -genreSpans[goToId-genresNodeId-1].offsetWidth * .13
+                + genreSpans[goToId-genresNodeId-1].getBoundingClientRect().left + "px";
             underline1.classList.remove("display-none");
             underline2.classList.add("display-none");
             }, 300);
@@ -208,8 +201,8 @@ function onSelectionChange(goToId) {
     else if (nextElementClass === "movie-card"){
         if (prevElementParentId !== "movies-line") underline1.classList.add("display-none");
         moviesLine.style.transform = "translateX(" + (screenMiddle
-            - (currentNode.id-moviesNodeId-1)*(185)
-            - navElements[currentNode.id].offsetWidth*1.3/2) + "px)";
+            - (goToId -moviesNodeId-1)*(185)
+            - (navElements[goToId].offsetWidth*1.3)/2 - 4) + "px)";
         underline2.style.top = 8 + moviesBounds.bottom+"px";
         underline2.style.width = 284 + "px";
         setTimeout(function (){

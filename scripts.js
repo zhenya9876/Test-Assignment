@@ -114,7 +114,8 @@ function onGenreChange() {
     for (var i = 0; i < movieCards.length; i++) {
         var newNodeLeft = (i === 0) ? - 1 : elementNodes.nodes.length - 1;
         var newNodeRight = (i === (movieCards.length - 1)) ? -1 : elementNodes.nodes.length + 1;
-        elementNodes.addNode("movie-card-" + i, genresNodeId, newNodeRight, -1,newNodeLeft);
+        elementNodes.addNode("movie-card-" + i, genresNodeId, newNodeRight, -1,newNodeLeft,
+            "movie-selected", null, null, null);
         elementNodes.nodes[moviesNodeId].addChild(elementNodes.nodes.length - 1);
     }
     //  long loading simulation
