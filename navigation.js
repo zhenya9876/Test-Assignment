@@ -184,9 +184,9 @@ function onSelectionChange(goToId) {
         genresLine.style.transform = "translateX(" + (genresLeftGuide - genresLeftMargin) + "px)";
 
         if (prevElementParentId !== "movies-line")
-            moviesLine.style.transform = "translateX(" + (screenMiddle - (185)/2) + "px)";
+            moviesLine.style.transform = "translateX(" + (screenMiddle - (195)/2 + 2.875) + "px)";
         else {
-            moviesLine.style.transform += "translateX(" + 21.25 + "px)";
+            moviesLine.style.transform += "translateX(" + 23.125 + "px)";
             underline2.classList.add("display-none");
         }
         underline1.style.width = navElements[goToId].offsetWidth * 1.5 + "px";
