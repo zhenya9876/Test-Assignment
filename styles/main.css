@@ -37,10 +37,6 @@ html, body {
     z-index: 1;
     position: absolute;
 }
-#underline1, #underline2 {
-    height: 4.6%;
-    transition: left .1s linear, width .1s ease-in;
-}
 .display-none{
     display: none;
 }
@@ -67,32 +63,54 @@ html, body {
 #interface{
     position: absolute;
 }
+.underline {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    background-color: #4ac0f2;
+    box-shadow: 0px 6px 16px 0px rgba(74, 192, 242, 0.75);
+}
+.genre-container .underline {
+    height: 6px;
+    bottom: 4px;
+}
+.movie-card .underline {
+    position: absolute;
+    width: 100%;
+    height: 8px;
+    bottom: -16px;
+}
 #genres-line {
     margin: 10px 0;
     height: 48px;
     color: #b3b3b3;
     display: inline-block;
-    overflow: hidden;
     white-space: nowrap;
     transform-origin: left;
     transition: transform .3s;
+    overflow: visible;
+}
+.genre-container {
+    display: inline-block;
+    padding: 0 16px;
 }
 .genre {
     display: inline-block;
     bottom: 0;
     color: #b3b3b3;
-    margin: 0 16px;
+    margin: 0;
     height: 48px;
     line-height: 48px;
-    transition: all .3s ease-out;
+    /*transition: all .3s ease-out;*/
 }
-.genre-active {
+.active.genre {
     color: #e5e5e5;
 }
-.genre-selected {
+.selected.genre {
     transform: scale(125%);
     transform-origin: 50% 30px;
-    margin: 0 30px;
+    margin: 0 20px;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -117,9 +135,9 @@ html, body {
     top: 50%;
     transform-origin: top;
     transform: translateY(-50%);
-    transition: transform .3s ease-in, margin .2s ease-out, top .5s;
+    transition: top .5s;
 }
-.movie-selected {
+.selected.movie-card {
     transform: scale(130%) translateY(-50%);
     /*top: 50%;*/
     transform-origin: top;
@@ -155,8 +173,4 @@ p {
     height: 21px;
     width: 22px;
     background-image: url("../img/rating-star-icon.png");
-}
-.selected {
-    transform: scale(125%);
-    box-shadow:inset 0 0 0 2px red;
 }

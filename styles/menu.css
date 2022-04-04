@@ -35,18 +35,18 @@
     margin: 20px;
     background-image: url("../img/menubar-settings-icon.png");
 }
-.menu-inactive {
+.inactive.menu-tab {
     background-position-y: 260px;
 }
-.menu-active {
+.active.menu-tab {
     background-position-y: 208px;
 }
-.menu-last-pressed {
+.last-pressed.menu-tab {
     background-position-y: 156px;
 }
-.menu-selected {
+.selected.menu-tab {
     background-position-y: 52px;
 }
-.menu-pressed-selected {
+.pressed-selected.menu-tab {
     background-position-y: 104px;
 }
