@@ -1,10 +1,19 @@
-#menubar {}
+#menubar {
+
+}
+#debug-text{
+    position: absolute;
+    margin-left: 100px;
+    text-align: center;
+    color: white;
+    z-index: 5;
+    background-color: darkred;
+}
 #menu-center {
     position: relative;
     margin: 0 auto;
     display: inline-block;
-    left: 50%;
-    transform: translate(-50%, 0);
+    left: 37.89%;
 }
 #menu-right{
     z-index: 3;

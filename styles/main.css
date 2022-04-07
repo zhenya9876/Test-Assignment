@@ -27,7 +27,7 @@ html, body {
 }
 #bg-container {
     position: relative;
-    transition: background .2s .2s ease-in;
+    /*transition: background .2s .2s ease-in;*/
     background-color: black;
     background-size: cover;
     background-position: center;
@@ -62,20 +62,19 @@ html, body {
 }
 #interface{
     position: absolute;
+    background-image: url("/img/black-bg-opacity-50.png");
 }
 .underline {
     position: relative;
-    left: 50%;
-    transform: translateX(-50%);
     border-radius: 4px;
     background-color: #4ac0f2;
-    box-shadow: 0px 6px 16px 0px rgba(74, 192, 242, 0.75);
+    /*-webkit-box-shadow: 0 6px 16px 0 rgba(74, 192, 242, 0.75);*/
 }
-.genre-container .underline {
+.genre-container > .underline {
     height: 6px;
-    bottom: 4px;
+    bottom: 0;
 }
-.movie-card .underline {
+.movie-card > .underline {
     position: absolute;
     width: 100%;
     height: 8px;
@@ -86,9 +85,9 @@ html, body {
     height: 48px;
     color: #b3b3b3;
     display: inline-block;
+    position: relative;
     white-space: nowrap;
-    transform-origin: left;
-    transition: transform .3s;
+    /*transition: margin-left .3s;*/
     overflow: visible;
 }
 .genre-container {
@@ -102,25 +101,25 @@ html, body {
     margin: 0;
     height: 48px;
     line-height: 48px;
-    /*transition: all .3s ease-out;*/
 }
 .active.genre {
     color: #e5e5e5;
 }
 .selected.genre {
-    transform: scale(125%);
-    transform-origin: 50% 30px;
-    margin: 0 20px;
+    font-size: 36px;
+    /*transform: scale(125%);*/
+    /*transform-origin: 50% 30px;*/
+    /*margin: 0 20px;*/
     font-weight: bold;
     text-transform: uppercase;
 }
 #movies-line {
     margin-top: 36px;
     white-space: nowrap;
-    /*height: 320px;*/
-    height: 44.44%;
-    /*height: 320px;*/
-    transition: transform .2s ease-out;
+    height: 250px;
+    position: relative;
+    /*height: 44.44%;*/
+    /*transition: transform .2s ease-out;*/
 }
 .movie-card {
     position: relative;
@@ -128,20 +127,25 @@ html, body {
     background-color: lightgray;
     background-size: cover;
     background-position: center;
-    border-radius: 4px;
+    border-radius: 6px;
     height: 250px;
     width: 175px;
-    margin: 0 5px;
-    top: 50%;
-    transform-origin: top;
-    transform: translateY(-50%);
-    transition: top .5s;
+    margin: 35px 5px;
+    /*top: 35px;*/
+    /*bottom: 10.94%;*/
+    /*transform-origin: top;*/
+    /*transform: translateY(-50%);*/
+    /*transition: top .5s;*/
 }
 .selected.movie-card {
-    transform: scale(130%) translateY(-50%);
-    /*top: 50%;*/
-    transform-origin: top;
-    margin: 0 30px;
+    position: relative;
+    bottom: 0;
+    height: 320px;
+    width: 224px;
+    /*transform: scale(130%) translateY(-50%);*/
+    /*top: -35px;*/
+    /*transform-origin: top;*/
+    margin: 0 20px;
 }
 #movie-info-line {
     text-align: center;
