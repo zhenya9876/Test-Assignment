@@ -87,8 +87,9 @@ html, body {
     display: inline-block;
     position: relative;
     white-space: nowrap;
-    /*transition: margin-left .3s;*/
     overflow: visible;
+    -webkit-transition: left .4s ease-out;
+    transition: left .4s ease-out;
 }
 .genre-container {
     display: inline-block;
@@ -119,7 +120,8 @@ html, body {
     height: 250px;
     position: relative;
     /*height: 44.44%;*/
-    /*transition: transform .2s ease-out;*/
+    -webkit-transition: left .05s ease-out;
+    transition: left .1s ease-out;
 }
 .movie-card {
     position: relative;
@@ -131,10 +133,8 @@ html, body {
     height: 250px;
     width: 175px;
     margin: 35px 5px;
-    /*top: 35px;*/
-    /*bottom: 10.94%;*/
-    /*transform-origin: top;*/
-    /*transform: translateY(-50%);*/
+    /*-ms-interpolation-mode: bicubic;*/
+    /*image-rendering: auto;*/
     /*transition: top .5s;*/
 }
 .selected.movie-card {

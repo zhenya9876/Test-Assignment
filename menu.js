@@ -43,12 +43,22 @@ function MenuObject(name, element) {
             return true;
         }
     }
+    this.canSelectNext = function () {
+        if (this.lastSelectedTab.index + 1 <= this.menuTabs.length - 1)
+            return true;
+        return false;
+    }
     this.selectPrev = function () {
         if (this.lastSelectedTab.index - 1 >= 0)
         {
             this.changeFocusInside(this.menuTabs[this.lastSelectedTab.index - 1]);
             return true;
         }
+    }
+    this.canSelectPrev = function () {
+        if (this.lastSelectedTab.index - 1 >= 0)
+            return true;
+        return false;
     }
     this.activate = function () {
         for (var i = 0; i < this.menuTabs.length; i++) {

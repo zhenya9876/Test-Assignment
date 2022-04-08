@@ -45,7 +45,6 @@ var commonInterQueue = [];
 //  they're loaded every time genre changes
 function initPage(){
 
-    // stb = gSTB;
     debugText = document.getElementById("debug-text");
     try{stb = gSTB;}
     catch (e){}
@@ -64,10 +63,7 @@ function initPage(){
     movieInfo = document.getElementById("movie-info");
 
     keysEnabled = true;
-    // genreChange = new Event('genrechange');
-    // window.addEventListener("genreChange", onGenreChange);
-    // movieChange = new Event('moviechange');
-    // window.addEventListener("movieChange", onMovieChange);
+
     initTopMenu();
     initGenresMenu();
     initMoviesMenu();
@@ -115,7 +111,7 @@ function initTopMenu() {
         Helper.removeClassForObject(genresMenu.lastSelectedTab.underlineElement, 'display-none');
         if (moviesMenu.menuTabs.length !== 0) {
             moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
-        onMovieChange();}
+        changeMovieFocus(moviesMenu, null);}
         onGenreChange();
     };
     menuCenterObj.pressRight = function (){menuCenterObj.selectNext()};
@@ -172,7 +168,7 @@ function initGenresMenu() {
         if(this.selectPrev()) {
             onGenreChange();
             if (moviesMenu.menuTabs.length !== 0) moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
-            onMovieChange();
+            // changeMovieFocus();
         }
         Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
     }
@@ -181,7 +177,7 @@ function initGenresMenu() {
         if (this.selectNext()) {
             onGenreChange();
             if (moviesMenu.menuTabs.length !== 0) moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
-            onMovieChange();
+            // changeMovieFocus();
         }
         Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
     }
@@ -207,7 +203,7 @@ function initGenresMenu() {
         Helper.removeClassForObject(moviesMenu.lastSelectedTab.underlineElement,"display-none");
         moviesMenu.changeFocusInside(moviesMenu.lastSelectedTab);
         // debugText.innerText = "changed focus to "+ focusedMenu.lastSelectedTab.idName;
-        onMovieChange();
+        changeMovieFocus(moviesMenu, null, true);
     }
     genresMenu.getCurrentGenre = function () {
         return movieGenres[this.lastSelectedTab.index];
@@ -226,29 +222,27 @@ function initMoviesMenu() {
         // moviesLine.style.transform = "translateX(" + (screenMiddle
         //     - (moviesMenu.lastSelectedTab.index)*(185) - 185/2) + "px";
         this.lastSelectedTab.isFocused = false;
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
-        Helper.removeClassForObject(this.lastSelectedTab.element,"selected");
         genresMenu.activate();
         Helper.removeClassForObject(genresMenu.lastSelectedTab.underlineElement,"display-none");
         focusedMenu = genresMenu;
         focusedElement = focusedMenu.lastSelectedTab;
-        onMovieChange();
+        changeMovieFocus(this, null, false);
+        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        Helper.removeClassForObject(this.lastSelectedTab.element,"selected");
     }
     moviesMenu.pressLeft = function () {
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
-        if(this.selectPrev()) {
-            // window.dispatchEvent(movieChange);
-            onMovieChange();
+        if(this.canSelectPrev()) {
+            Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            changeMovieFocus(this, false, false);
+            Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
         }
-        Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
     }
     moviesMenu.pressRight = function () {
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
-        if(this.selectNext()) {
-            // window.dispatchEvent(movieChange);
-            onMovieChange();
+        if(this.canSelectNext()) {
+            Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            changeMovieFocus(this, true, false);
+            Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
         }
-        Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
     }
     moviesMenu.pressEnter = function () {
         debugText.innerText = "pressEnter";
@@ -299,6 +293,7 @@ function onGenreChange() {
         newUnderline.setAttribute('class', 'underline');
         Helper.addClassForObject(newUnderline,'display-none');
         newMovieCard.style.backgroundImage = "url('"+movies[moviesCurrentIds[i]].image+"')";
+        // newMovieCard.style.backgroundImage = "url('./img/icon-more.png')";
         newMovieCard.insertAdjacentElement("beforeend", newUnderline);
         moviesLine.insertAdjacentElement("beforeend", newMovieCard);
         movieCards[i] = newMovieCard;
@@ -312,69 +307,47 @@ function onGenreChange() {
 
     genresLine.style.left = (genresLeftGuide - genresLeftMargin) + "px";
 
-    // genresLine.style.transform = "translateX(" + (genresLeftGuide - genresLeftMargin) + "px)";
-
     moviesLine.style.left = (screenMiddle - (185)/2) + "px"; //+2.875
     //  long loading simulation
     setTimeout(function (){
         Helper.addClassForObject(loaderWrapper, "display-none");
     keysEnabled = true;
-    }, moviesCurrentIds.length * 10);
+    }, moviesCurrentIds.length * moviesCurrentIds.length * 10);
 }
 
-function onMovieChange() {
-    var moviesOldMargin = parseInt(moviesLine.style.left);
-    var moviesMarginLeft = moviesMenu.lastSelectedTab.isFocused ? 20 : 5;
-    var screenMiddle = window.innerWidth * .5;
-    moviesNewMargin = screenMiddle - moviesMenu.lastSelectedTab.index*185
-                - movieCards[moviesMenu.lastSelectedTab.index].offsetWidth/2
-                - moviesMarginLeft;
-        // var interArr = getInterpolationArray(moviesOldMargin, moviesNewMargin);
-
-        var currentMovie = moviesMenu.getCurrentMovie();
-        movieTitle.innerText = currentMovie.getMovieTitle();
-        movieInfo.innerHTML = currentMovie.getMovieInfo();
-        // bgContainer.style.backgroundImage = "url('"+currentMovie.imageBg+"')";
-
-    // pushToQueue(getInterpolationArray(moviesOldMargin, moviesNewMargin), commonInterQueue);
-    commonInterQueue = getInterpolationArray(moviesOldMargin, moviesNewMargin);
-    j = 0;
-    function translateElement(element, interArr){
-        setTimeout(function () {
-            element.style.left = interArr[j] + "px";
-            j++;
-            if(j < commonInterQueue.length){
-                translateElement(element, interArr);
-            }
-        },0);
+function changeMovieFocus(menu, isNext, isFirst) {
+    var currTabIndex = menu.lastSelectedTab.index;
+    // movieCards[currTabIndex].style.backgroundImage =
+    //     "url('"+movies[moviesCurrentIds[currTabIndex]].imageSmall + "')";
+    var nextTabIndex;
+        // = (isNext) ? menu.lastSelectedTab.index + 1
+        // : this.lastSelectedTab.index - 1;
+    switch(isNext){
+        case null:
+            nextTabIndex = currTabIndex;
+            break;
+        case true:
+            nextTabIndex = menu.lastSelectedTab.index + 1;
+            break;
+        case false:
+            nextTabIndex = menu.lastSelectedTab.index - 1;
+            break;
     }
-    translateElement(moviesLine, commonInterQueue);
-    // debugText.innerText = commonInterQueue.join('\n') + '\n';
+    if (isNext !== null || isFirst){
+        menu.changeFocusInside(menu.menuTabs[nextTabIndex]);
+        refreshMovieInfo();
+    }
+    // movieCards[nextTabIndex].style.backgroundImage = "url('"+movies[moviesCurrentIds[nextTabIndex]].image+"')";
+    // var moviesOldMargin = parseInt(moviesLine.style.left);
+    var moviesMarginLeft = menu.lastSelectedTab.isFocused ? 20 : 5;
+    var screenMiddle = window.innerWidth * .5;
+    moviesNewMargin = screenMiddle - menu.lastSelectedTab.index*185
+                - movieCards[menu.lastSelectedTab.index].offsetWidth/2
+                - moviesMarginLeft;
+    moviesLine.style.left = moviesNewMargin+'px';
 }
-
-function getInterpolationArray (start, end) {
-    // var interArr = [.29289, 0.19098, .10899, .04894, .01231, 0];
-    var interArr = [.18, .09, .045, .02, .01, 0];
-
-    // var interArr = [.2,.16,.1,.04,0];
-    // var step = 0.1;
-    // var startStep = 0.5;
-            for (var i = 0; i < interArr.length; i++) {
-                interArr[i]=start * interArr[i] + end * (1-interArr[i]);
-            }
-    // debugText.innerText = "s: " + start + " e: "+ end;
-    // debugText.innerText += "\n" + interArr.join('\n');
-    return interArr;
+function refreshMovieInfo() {
+    var currentMovie = moviesMenu.getCurrentMovie();
+    movieTitle.innerText = currentMovie.getMovieTitle();
+    movieInfo.innerHTML = currentMovie.getMovieInfo();
 }
-// function pushToQueue(array, queue) {
-//     debugText.innerText = 'pushing started';
-    // for (var i = 0; i < array.length; i++) {
-    //     if(queue.length > 6) {
-    //         debugText.innerText = "before shift";
-    //         queue.shift();
-    //         debugText.innerText = "after shift";
-    //     }
-    //     queue.push(array[i]);
-    //     debugText.innerText = "after push";
-    // }
-// }
