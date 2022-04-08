@@ -62,6 +62,6 @@ function onKeyUp(){
     if (window.event) {
         key = window.event.keyCode;}
     else {key = event.which;}
-    if(keysEnabled && focusedMenu.idName === "movies-line" && (key === 37 || key === 39)){
+    if(keysEnabled && focusedMenu.idName === "movies-line" && (key === 37 || key === 39 || key === 40)){
         bgContainer.style.backgroundImage = "url('"+moviesMenu.getCurrentMovie().imageBg+"')";}
     }

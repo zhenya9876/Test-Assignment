@@ -30,7 +30,7 @@ function MenuObject(name, element) {
         this.lastSelectedTab.isFocused = false;
         Helper.removeClassForObject(this.lastSelectedTab.element, 'selected');
         this.lastSelectedTab = nextTab;
-        // focusedElement = this.lastSelectedTab;
+        focusedElement = this.lastSelectedTab;
         this.lastSelectedTab.isFocused = true;
         Helper.addClassForObject(this.lastSelectedTab.element, 'selected');
         debugText.innerText = this.lastSelectedTab.idName;

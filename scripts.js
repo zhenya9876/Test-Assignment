@@ -64,6 +64,7 @@ function initPage(){
 
     keysEnabled = true;
 
+    loaderWrapper.style.display = 'none';
     initTopMenu();
     initGenresMenu();
     initMoviesMenu();
@@ -108,7 +109,8 @@ function initTopMenu() {
         else genresMenu.changeFocusInside(genresMenu.lastSelectedTab);
         focusedMenu = genresMenu;
         focusedElement = genresMenu.lastSelectedTab;
-        Helper.removeClassForObject(genresMenu.lastSelectedTab.underlineElement, 'display-none');
+
+        genresMenu.lastSelectedTab.underlineElement.style.display = '';
         if (moviesMenu.menuTabs.length !== 0) {
             moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
         changeMovieFocus(moviesMenu, null);}
@@ -147,7 +149,7 @@ function initGenresMenu() {
         var newUnderline = document.createElement("div");
         newGenreContainer.setAttribute('class', 'genre-container');
         newUnderline.setAttribute('class', 'underline');
-        Helper.addClassForObject(newUnderline, 'display-none');
+        newUnderline.style.display = 'none';
         var newSpan = document.createElement("span");
         newSpan.innerText = newSpan.innerHTML = newSpan.textContent = movieGenres[i];
         newSpan.setAttribute('class', 'genre');
@@ -164,27 +166,27 @@ function initGenresMenu() {
         genreSpansOffsets[i] = genreSpans[i-1].offsetWidth + 32 + genreSpansOffsets[i-1];
     }
     genresMenu.pressLeft = function () {
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        this.lastSelectedTab.underlineElement.style.display = 'none';
         if(this.selectPrev()) {
             onGenreChange();
             if (moviesMenu.menuTabs.length !== 0) moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
             // changeMovieFocus();
         }
-        Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        this.lastSelectedTab.underlineElement.style.display = '';
     }
     genresMenu.pressRight = function () {
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        this.lastSelectedTab.underlineElement.style.display = 'none';
         if (this.selectNext()) {
             onGenreChange();
             if (moviesMenu.menuTabs.length !== 0) moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
             // changeMovieFocus();
         }
-        Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        this.lastSelectedTab.underlineElement.style.display = '';
     }
     genresMenu.pressUp = function () {
         focusedMenu = menuCenterObj;
         this.lastSelectedTab.isFocused = false;
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement, "display-none");
+        this.lastSelectedTab.underlineElement.style.display = 'none';
         Helper.removeClassForObject(genresMenu.lastSelectedTab.element, "selected");
         genresMenu.deactivate();
         menuCenterObj.activate();
@@ -194,14 +196,14 @@ function initGenresMenu() {
         focusedElement = focusedMenu.lastSelectedTab;
     }
     genresMenu.pressDown = function () {
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement, "display-none");
+        this.lastSelectedTab.underlineElement.style.display = 'none';
         this.deactivate();
         Helper.addClassForObject(this.lastSelectedTab.element,"selected");
         focusedMenu = moviesMenu;
         // if (!moviesMenu.isMenuEntered) moviesMenu.lastSelectedTab = moviesMenu.menuTabs[0];
         focusedElement = moviesMenu.lastSelectedTab;
-        Helper.removeClassForObject(moviesMenu.lastSelectedTab.underlineElement,"display-none");
         moviesMenu.changeFocusInside(moviesMenu.lastSelectedTab);
+        moviesMenu.lastSelectedTab.underlineElement.style.display = '';
         // debugText.innerText = "changed focus to "+ focusedMenu.lastSelectedTab.idName;
         changeMovieFocus(moviesMenu, null, true);
     }
@@ -223,25 +225,25 @@ function initMoviesMenu() {
         //     - (moviesMenu.lastSelectedTab.index)*(185) - 185/2) + "px";
         this.lastSelectedTab.isFocused = false;
         genresMenu.activate();
-        Helper.removeClassForObject(genresMenu.lastSelectedTab.underlineElement,"display-none");
+        genresMenu.lastSelectedTab.underlineElement.style.display = '';
         focusedMenu = genresMenu;
         focusedElement = focusedMenu.lastSelectedTab;
         changeMovieFocus(this, null, false);
-        Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+        this.lastSelectedTab.underlineElement.style.display = 'none';
         Helper.removeClassForObject(this.lastSelectedTab.element,"selected");
     }
     moviesMenu.pressLeft = function () {
         if(this.canSelectPrev()) {
-            Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            this.lastSelectedTab.underlineElement.style.display = 'none';
             changeMovieFocus(this, false, false);
-            Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            this.lastSelectedTab.underlineElement.style.display = '';
         }
     }
     moviesMenu.pressRight = function () {
         if(this.canSelectNext()) {
-            Helper.addClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            this.lastSelectedTab.underlineElement.style.display = 'none';
             changeMovieFocus(this, true, false);
-            Helper.removeClassForObject(this.lastSelectedTab.underlineElement,"display-none");
+            this.lastSelectedTab.underlineElement.style.display = '';
         }
     }
     moviesMenu.pressEnter = function () {
@@ -258,8 +260,10 @@ function initMoviesMenu() {
                     stb.SetVideoControl(0);
                     stb.EnableVKButton(false);
                     stb.EnableVKButton(0);
-                stb.Play("auto http://192.168.0.102:80/videos/NGGYU.mp4");
-                    debugText.innerText = stb.IsPlaying();
+
+                // stb.Play("auto http://192.168.0.102:80/videos/NGGYU.mp4");
+                //     var config; stb.ReadCFG(config);
+                    debugText.innerText = stb.RDir();
                 // stb.Play("ffrt3 https://www.youtube.com/watch?v=dQw4w9WgXcQ");
                 }
             } catch (e) {
@@ -274,8 +278,7 @@ function initMoviesMenu() {
 function onGenreChange() {
     //  for the movies loading time we turn off the keys and show a loader overlay
     keysEnabled = false;
-
-    Helper.removeClassForObject(loaderWrapper,"display-none");
+    loaderWrapper.style.display = '';
 
     //  remove old movie cards
     moviesMenu.menuTabs = [];
@@ -291,7 +294,7 @@ function onGenreChange() {
         var newUnderline = document.createElement("div");
         // newUnderline.style.backgroundImage = "url('./img/underline.png')";
         newUnderline.setAttribute('class', 'underline');
-        Helper.addClassForObject(newUnderline,'display-none');
+        newUnderline.style.display = 'none';
         newMovieCard.style.backgroundImage = "url('"+movies[moviesCurrentIds[i]].image+"')";
         // newMovieCard.style.backgroundImage = "url('./img/icon-more.png')";
         newMovieCard.insertAdjacentElement("beforeend", newUnderline);
@@ -310,9 +313,9 @@ function onGenreChange() {
     moviesLine.style.left = (screenMiddle - (185)/2) + "px"; //+2.875
     //  long loading simulation
     setTimeout(function (){
-        Helper.addClassForObject(loaderWrapper, "display-none");
+        loaderWrapper.style.display = 'none';
     keysEnabled = true;
-    }, moviesCurrentIds.length * moviesCurrentIds.length * 10);
+    }, (moviesCurrentIds.length ? moviesCurrentIds * moviesCurrentIds.length * 10 : 0));
 }
 
 function changeMovieFocus(menu, isNext, isFirst) {
@@ -336,13 +339,16 @@ function changeMovieFocus(menu, isNext, isFirst) {
     if (isNext !== null || isFirst){
         menu.changeFocusInside(menu.menuTabs[nextTabIndex]);
         refreshMovieInfo();
+        moviesMenu.lastSelectedTab.underlineElement.style.display = '';
     }
     // movieCards[nextTabIndex].style.backgroundImage = "url('"+movies[moviesCurrentIds[nextTabIndex]].image+"')";
     // var moviesOldMargin = parseInt(moviesLine.style.left);
     var moviesMarginLeft = menu.lastSelectedTab.isFocused ? 20 : 5;
+    var lastSelectedCardWidth = (menu.lastSelectedTab.isFocused) ? 112 : 87.5;
     var screenMiddle = window.innerWidth * .5;
     moviesNewMargin = screenMiddle - menu.lastSelectedTab.index*185
-                - movieCards[menu.lastSelectedTab.index].offsetWidth/2
+                - lastSelectedCardWidth
+                // - movieCards[menu.lastSelectedTab.index].offsetWidth/2
                 - moviesMarginLeft;
     moviesLine.style.left = moviesNewMargin+'px';
 }

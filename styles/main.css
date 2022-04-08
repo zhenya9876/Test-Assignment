@@ -37,9 +37,6 @@ html, body {
     z-index: 1;
     position: absolute;
 }
-.display-none{
-    display: none;
-}
 #loader-wrapper {
     position: absolute;
     background-image: url("../img/black-bg-opacity-30.png");
@@ -88,8 +85,8 @@ html, body {
     position: relative;
     white-space: nowrap;
     overflow: visible;
-    -webkit-transition: left .4s ease-out;
-    transition: left .4s ease-out;
+    -webkit-transition: left .2s ease-out;
+    transition: left .2s ease-out;
 }
 .genre-container {
     display: inline-block;
