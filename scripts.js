@@ -1,6 +1,5 @@
 // window.addEventListener("load", initPage);
 window.onload = initPage;
-var stb;
 var bgContainer;
 var interfaceContainer;
 var loaderWrapper;
@@ -16,6 +15,7 @@ var moviesCurrentIds = [];
 var movieCards = [];
 var movieTitle;
 var movieInfo;
+var player;
 
 var keysEnabled;
 var genreChange;
@@ -35,7 +35,11 @@ var menuTabApps;
 var menuTabSettings;
 var genresMenu;
 var moviesMenu;
+var playerMenu;
 
+var stb;
+var stbEvent;
+var videoInfo;
 var debugText;
 var j;
 var moviesNewMargin;
@@ -46,7 +50,8 @@ var commonInterQueue = [];
 function initPage(){
 
     debugText = document.getElementById("debug-text");
-    try{stb = gSTB;}
+    try{stb = gSTB;
+        stbEvent.onEvent = onStbEvent(event);}
     catch (e){}
     // stb.InitPlayer();
 
@@ -61,14 +66,15 @@ function initPage(){
     movieGenresCount = movieGenres.length;
     movieTitle = document.getElementById("movie-title");
     movieInfo = document.getElementById("movie-info");
-
+    player = document.getElementById("player");
+    player.style.display = 'none';
     keysEnabled = true;
 
     loaderWrapper.style.display = 'none';
     initTopMenu();
     initGenresMenu();
     initMoviesMenu();
-    //  then invoke nodes initialization initNodes() in navigation.js
+    initPlayer();
     initNav();
     debugText.innerText = '';
 }
@@ -247,32 +253,212 @@ function initMoviesMenu() {
         }
     }
     moviesMenu.pressEnter = function () {
-        debugText.innerText = "pressEnter";
-            try {
-                if(stb.IsPlaying()) {
-                    stb.Stop();
-                    stb.DeinitPlayer();
-                    debugText.innerText = "pressEnter -";
-                } else {
-                    stb.InitPlayer();
-                    stb.SetPIG(1, 0, 0, 0);
-                    stb.EnableServiceButton(true);
-                    stb.SetVideoControl(0);
-                    stb.EnableVKButton(false);
-                    stb.EnableVKButton(0);
+        focusedMenu = playerMenu;
+        playerMenu.element.style.display = '';
+        debugText.innerText = 'player showed';
+        stb.InitPlayer();
+        stb.SetPIG(playerMenu.playerMode, 0, 0, 0);
+        stb.EnableServiceButton(true);
+        stb.SetVideoControl(0);
+        stb.EnableVKButton(false);
+        stb.EnableVKButton(0);
+        stb.Play("auto " + playerMenu.videos[playerMenu.currentVideo]);
+        playerMenu.currentAspect = 0;
+        stb.SetPosTime(playerMenu.playPosition);
+        // setTimeout(, 300);
+        updatePIG();
+    }
+}
+function initPlayer() {
+    playerMenu = new MenuObject(player.id, player);
+    playerMenu.playerMode = 1;
+    playerMenu.playSpeed = 1;
+    playerMenu.rewindSpeed = 4;
+    playerMenu.currentAspect = 0;
+    playerMenu.playPosition = 0;
+    playerMenu.soundVolume = 100;
+    playerMenu.videos = [
+        "http://192.168.0.102:80/videos/Moby.mp4",
+        "http://192.168.0.102:80/videos/Evolution.mp4"
+    ];
+    playerMenu.currentVideo = 0;
+    playerMenu.fullAspectRatios =
+        ["stretch",
+        "letterbox",
+        "pan&scan",
+        "combined",
+            "auto",
+            "20:9",
+            "16:9",
+            "4:3"
+        ];
 
-                // stb.Play("auto http://192.168.0.102:80/videos/NGGYU.mp4");
-                //     var config; stb.ReadCFG(config);
-                    debugText.innerText = stb.RDir();
-                // stb.Play("ffrt3 https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-                }
-            } catch (e) {
-                playerManager = stbPlayerManager;
-                player = this.playerManager.list[0];
-                player.fullscreen = true;
-                    debugText.innerText = "failed player init" + e.message;
-                }
+    playerMenu.windowAspectRatios = [
+        "auto",
+        "20:9",
+        "16:9",
+        "4:3"];
+
+    playerMenu.pressEnter = function () {
+        debugText.innerText = "pressEnter";
+        try {
+            if(this.playSpeed !== 0) {
+                this.playSpeed = 0;
+                stb.SetSpeed(this.playSpeed);
+                stb.Pause();
+            } else {
+                this.playSpeed = 1;
+                stb.SetSpeed(this.playSpeed);
+                stb.SetPosTime(stb.GetPosTime());
+                stb.Continue();
+            }
+        } catch (e) {
+            debugText.innerText = "failed player init" + e.message;
         }
+    }
+    playerMenu.pressLeft = function () {
+            if (this.playSpeed > 1) {
+                this.playSpeed--;
+                stb.SetSpeed(this.playSpeed);
+                stb.Continue();
+            }
+                else {
+                    stb.Pause();
+                    var goToTime = stb.GetPosTime() - this.rewindSpeed;
+                    if(goToTime < 0) goToTime = 0;
+                    stb.SetPosTime(goToTime);
+                    stb.Continue();
+            }
+    }
+    playerMenu.pressRight = function () {
+        if (this.playSpeed < 8) {
+            this.playSpeed++;
+            stb.SetSpeed(this.playSpeed);
+        }
+    }
+    playerMenu.pressUp = function () {
+        if (this.currentVideo === this.videos.length - 1)
+        {this.currentVideo = 0}
+        else this.currentVideo++;
+        this.aspectRatio = 0;
+        this.playPosition = 0;
+        moviesMenu.pressEnter();
+    }
+    playerMenu.pressDown = function () {
+        if (this.currentVideo === 0)
+        {this.currentVideo = this.videos.length - 1}
+        else this.currentVideo--;
+        this.aspectRatio = 0;
+        this.playPosition = 0;
+        moviesMenu.pressEnter();
+    }
+    playerMenu.pressExit = function () {
+        focusedMenu = moviesMenu;
+        stb.Stop();
+        stb.DeinitPlayer();
+        this.currentAspect = 0;
+        this.playPosition = 0;
+        playerMenu.element.style.display = 'none';
+    }
+    playerMenu.pressAspect = function () {
+        var aspectsLen;
+        if (this.playerMode === 0) aspectsLen = this.windowAspectRatios.length;
+        else aspectsLen = this.fullAspectRatios.length;
+            if (this.currentAspect >= aspectsLen - 1)
+            {this.currentAspect = 0}
+            else this.currentAspect++;
+            var currentAspectName; if (this.playerMode === 0)
+            currentAspectName = this.windowAspectRatios[this.currentAspect]
+                else currentAspectName = this.fullAspectRatios[this.currentAspect];
+            var currentAspectCode = 0x20;
+            switch (currentAspectName) {
+                case "stretch":
+                    currentAspectCode = 0x20;
+                    break;
+                case "letterbox":
+                    currentAspectCode = 0x30;
+                    break;
+                case "pan&scan":
+                    currentAspectCode = 0x40;
+                    break;
+                case "combined":
+                    currentAspectCode = 0x50;
+                    break;
+                case "auto":
+                    currentAspectCode = 0x02;
+                    break;
+                case "20:9":
+                    currentAspectCode = 0x03;
+                    break;
+                case "16:9":
+                    currentAspectCode = 0x00;
+                    break;
+                case "4:3":
+                    currentAspectCode = 0x10;
+                    break;
+            }
+        stb.SetAspect(currentAspectCode);
+        updatePIG();
+    }
+    playerMenu.pressBack = function () {
+        if (this.playerMode === 0)
+        this.playerMode = 1;
+        else this.playerMode = 0;
+        this.playPosition = stb.GetPosTime();
+        videoInfo = eval('['+stb.GetVideoInfo()+']');
+        var width =  parseInt(videoInfo[0]['pictureWidth']);
+        var height =  parseInt(videoInfo[0]['pictureHeight']);
+        debugText.innerText = videoInfo[0]['pictureWidth'];
+        stb.SetPIG(playerMenu.playerMode, 128, 1280 - .5*width, 720 - .5*height);
+        stb.SetPosTime(playerMenu.playPosition);
+    }
+    playerMenu.pressVolMinus = function () {
+        this.soundVolume = parseInt(stb.GetVolume()) - 10;
+        if (this.soundVolume < 0) this.soundVolume = 0;
+        stb.SetVolume(parseInt(this.soundVolume));
+        debugText.innerText = 'vol: '+ this.soundVolume;
+    }
+    playerMenu.pressVolPlus = function () {
+        this.soundVolume = parseInt(stb.GetVolume()) + 10;
+        if (this.soundVolume > 100) this.soundVolume = 100;
+        stb.SetVolume(this.soundVolume);
+        debugText.innerText = 'vol: '+ this.soundVolume;
+    }
+    playerMenu.pressService = function () {
+        stb.SetVideoState(0);
+        stb.DeinitPlayer();
+        debugText.innerText = 'service pressed';
+    }
+}
+function updatePIG() {
+    videoInfo = eval('['+stb.GetVideoInfo()+']');
+    var hPAR = parseInt(videoInfo[0]['hPAR']);
+    var vPAR = parseInt(videoInfo[0]['vPAR']);
+    var width =  parseInt(videoInfo[0]['pictureWidth']);
+    var height =  parseInt(videoInfo[0]['pictureHeight']);
+    var aspectCoef = (width*hPAR/vPAR)/height;
+    // debugText.innerText = aspectCoef;
+    stb.SetPIG(playerMenu.playerMode, 128, 1280 - .5 * width, 720 - .5*height);
+}
+function onStbEvent(data) {
+    var eventCode = parseInt(data);
+    switch (eventCode) {
+        case 1:
+            focusedMenu = moviesMenu;
+            stb.Stop();
+            stb.DeinitPlayer();
+            break;
+        case 7:
+            updatePIG();
+            debugText.innerText = 'video info detected';
+            break;
+        case 0x20:
+            alert('HDMI is connected');
+            break;
+        case 0x21:
+            alert('HDMI is disconnected');
+            break;
+    }
 }
 //  when genre changes need to update current movie cards
 function onGenreChange() {
@@ -323,8 +509,6 @@ function changeMovieFocus(menu, isNext, isFirst) {
     // movieCards[currTabIndex].style.backgroundImage =
     //     "url('"+movies[moviesCurrentIds[currTabIndex]].imageSmall + "')";
     var nextTabIndex;
-        // = (isNext) ? menu.lastSelectedTab.index + 1
-        // : this.lastSelectedTab.index - 1;
     switch(isNext){
         case null:
             nextTabIndex = currTabIndex;
@@ -352,6 +536,7 @@ function changeMovieFocus(menu, isNext, isFirst) {
                 - moviesMarginLeft;
     moviesLine.style.left = moviesNewMargin+'px';
 }
+
 function refreshMovieInfo() {
     var currentMovie = moviesMenu.getCurrentMovie();
     movieTitle.innerText = currentMovie.getMovieTitle();

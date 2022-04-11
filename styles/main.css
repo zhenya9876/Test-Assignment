@@ -150,6 +150,14 @@ html, body {
     width: 100%;
     bottom: 3%;
 }
+#player {
+    position: absolute;
+    width: 1280px;
+    height: 720px;
+    /*background-color: rgba(47,52,97,0.47);*/
+    background-color: #000;
+    z-index: 6;
+}
 h1 {
     font-size: 44px;
     font-family: "Helvetica Bold", sans-serif;

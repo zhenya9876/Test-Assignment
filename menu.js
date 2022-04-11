@@ -13,6 +13,12 @@ function MenuObject(name, element) {
     this.pressDown = null;
     this.pressLeft = null;
     this.pressEnter = null;
+    this.pressBack = null;
+    this.pressExit = null;
+    this.pressAspect = null;
+    this.pressVolMinus = null;
+    this.pressVolPlus = null;
+    this.pressService = null;
 
     this.addMenuTab = function (tab) {
         tab.index = this.menuTabs.length;
@@ -88,6 +94,12 @@ function MenuTab(idName, element) {
     this.pressDown = null;
     this.pressLeft = null;
     this.pressEnter = null;
+    this.pressBack = null;
+    this.pressExit = null;
+    this.pressAspect = null;
+    this.pressVolMinus = null;
+    this.pressVolPlus = null;
+    this.pressService = null;
 }
 var Helper = {
     /**
